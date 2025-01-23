@@ -18,7 +18,7 @@ The Trash Wheel Collection Data is part of the Healthy Harbor initiative in Balt
 
 ## Data Cleaning and Exploration
 
-### Loading Data
+## Loading Data
 
 ```{r load-data}
 # load the data directly from GitHub.
