@@ -12,7 +12,7 @@ library(ggplot2)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Introduction
+## Introduction to Data
 
 The Trash Wheel Collection Data is part of the Healthy Harbor initiative in Baltimore, which uses semi-autonomous trash interceptors to remove trash from waterways. This dataset provides insights into the types and quantities of trash collected, offering the ability to explore patterns, seasonal variations, and the impact of these efforts on environmental sustainability.
 
