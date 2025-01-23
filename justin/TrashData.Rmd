@@ -1,0 +1,167 @@
+---
+title: "TrashData"
+author: "Justin Rivera"
+date: "2025-01-14"
+output: html_document
+---
+
+# Option 1: tidytuesdayR package 
+## install.packages("tidytuesdayR")
+```{r}
+install.packages("tidytuesdayR")
+tuesdata <- tidytuesdayR::tt_load('2024-03-05')
+## OR
+tuesdata <- tidytuesdayR::tt_load(2024, week = 10)
+
+trashwheel <- tuesdata$trashwheel
+
+
+# Option 2: Read directly from GitHub
+
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+```
+Cleaning Script
+```{r}
+library(tidyverse)
+library(here)
+library(withr)
+
+working_dir <- here::here("data", "2024", "2024-03-05")
+
+# Download the csv files from https://docs.google.com/spreadsheets/d/1b8Lbe-z3PNb3H8nSsSjrwK2B0ReAblL2/edit#gid=1143432795
+
+mrtrash <- read_csv("mrtrashwheel.csv")
+professortrash <- read_csv("professortrash.csv")
+captaintrash <- read_csv("captaintrash.csv")
+gwynndatrash <- read_csv("gwynndatrash.csv")
+
+
+# Check the files
+glimpse(mrtrash)
+glimpse(professortrash)
+glimpse(captaintrash)
+glimpse(gwynndatrash)
+
+# Remove empty rows and columns
+
+mrtrash <- head(mrtrash, -1)
+mrtrash <- mrtrash[-c(15:16)]
+professortrash <- head(professortrash, -1)
+captaintrash <- head(captaintrash, -1)
+gwynndatrash <- head(gwynnda, -1)
+
+# Rename columns so they don't have spaces
+
+colnames(mrtrash)
+
+mrtrash <- mrtrash %>% 
+  rename(
+    Weight = "Weight (tons)",
+    Volume = "Volume (cubic yards)",
+    PlasticBottles = "Plastic Bottles",
+    CigaretteButts = "Cigarette Butts",
+    GlassBottles = "Glass Bottles",
+    PlasticBags = "Plastic Bags",
+    SportsBalls = "Sports Balls",
+    HomesPowered = "Homes Powered*"
+  )
+
+colnames(professortrash)
+
+professortrash <- professortrash %>% 
+  rename(
+    Weight = "Weight (tons)",
+    Volume = "Volume (cubic yards)",
+    PlasticBottles = "Plastic Bottles",
+    CigaretteButts = "Cigarette Butts",
+    GlassBottles = "Glass Bottles",
+    PlasticBags = "Plastic Bags",
+    HomesPowered = "Homes Powered*"
+  )
+
+colnames(captaintrash)
+
+captaintrash <- captaintrash %>% 
+  rename(
+    Weight = "Weight (tons)",
+    Volume = "Volume (cubic yards)",
+    PlasticBottles = "Plastic Bottles",
+    CigaretteButts = "Cigarette Butts",
+    PlasticBags = "Plastic Bags",
+    HomesPowered = "Homes Powered*"
+  )
+
+colnames(gwynndatrash)
+
+gwynndatrash <- gwynndatrash %>% 
+  rename(
+    Weight = "Weight (tons)",
+    Volume = "Volume (cubic yards)",
+    PlasticBottles = "Plastic Bottles",
+    CigaretteButts = "Cigarette Butts",
+    PlasticBags = "Plastic Bags",
+    HomesPowered = "Homes Powered*"
+  )
+
+# Add a column with the name of the trash wheel, and columns with "NA" where the dataset doesn't have that information
+
+mrtrash <- data.frame(ID = "mister", Name = "Mister Trash Wheel", mrtrash)
+
+# Add SportsBalls to professor
+professortrash <- data.frame(ID = "professor", Name = "Professor Trash Wheel", SportsBalls = NA, professortrash)
+
+# Add SportsBalls and GlassBottles to captain and gwynnda
+captaintrash <- data.frame(ID = "captain", Name = "Captain Trash Wheel", SportsBalls = NA, GlassBottles = NA, captaintrash)
+gwynndatrash <- data.frame(ID = "gwynnda", Name = "Gwynnda Trash Wheel", SportsBalls = NA, GlassBottles = NA, gwynndatrash)
+
+# Join the dataframes together
+
+trashwheel <- rbind(mrtrash, professortrash, captaintrash, gwynndatrash)
+
+
+
+readr::write_csv(
+  trashwheel,
+  fs::path(working_dir, "trashwheel.csv")
+)
+```
+
+```{r}
+monthyear_data = trashwheel %>% 
+  mutate(MonthYear = paste(Month, as.character(Year)))
+
+weight_per_month = monthyear_data %>% 
+  select(MonthYear, Weight) %>% 
+  group_by(MonthYear = fct_inorder(MonthYear)) %>% 
+  summarize(sum_weight = sum(Weight))
+
+weight_per_month
+
+
+
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(weight_per_month, mapping = aes(x = MonthYear, y = sum_weight)) +
+  geom_col()
+
+```
+
+```{r}
+
+weight_per_month_2 = trashwheel %>% 
+  select(Month, Weight) %>% 
+  group_by(Month) %>% 
+  summarize(sum_weight = sum(Weight))
+
+weight_per_month_2
+
+```
+
+```{r}
+ggplot(weight_per_month_2, mapping = aes(x = Month, y = sum_weight, fill = Month)) +
+  geom_col()
+
+```
