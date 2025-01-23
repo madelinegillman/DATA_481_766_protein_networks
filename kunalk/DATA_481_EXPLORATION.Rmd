@@ -27,7 +27,7 @@ This analysis will clean and explore the dataset, focusing on key questions such
 ### Loading Data
 
 ```{r load-data}
-# load the data directly from GitHub
+# load the data directly from GitHub.
 trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
 
 glimpse(trashwheel)
