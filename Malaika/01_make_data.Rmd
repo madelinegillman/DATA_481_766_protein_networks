@@ -1,5 +1,36 @@
-```{r}
-
-```
+---
+title: "01_make_data"
+author: "Malaika Shroff"
+date: "01/30/25"
+output:
+  html_document: default
+fontsize: 11pt
+---
 
 #section 1
+In the following project, we will attempt to explore trash.
+
+#Section 2
+I hope to discover an interesting allocation of trash.
+
+#Section 3
+Retreiving the data set
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+```
+
+#section 4
+Dimensions and Variables match up.
+```{r}
+head(trashwheel)
+unique(trashwheel$Name)
+```
+
+#Section 5
+Save locally to sub-folder "RData"
+
+
