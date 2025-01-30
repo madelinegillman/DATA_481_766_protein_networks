@@ -1,0 +1,55 @@
+---
+title: "trash_data_analysis"
+output: html_notebook
+---
+
+Loading trash data:
+```{r}
+library(tidyverse)
+library(tidytuesdayR)
+library(ggplot2)
+tuesdata <- tidytuesdayR::tt_load(2024, week = 10)
+trashwheel <- tuesdata$trashwheel
+```
+
+First lines of trash data:
+```{r}
+head(trashwheel)
+```
+
+
+Summary Statistics for Numerical Variables:
+```{r}
+summary(trashwheel[c("Weight", "Volume", "PlasticBottles", "Polystyrene", "CigaretteButts", "GlassBottles", "PlasticBags", "Wrappers", "SportsBalls", "HomesPowered")])
+```
+
+Distribution of Weight of Dumpsters:
+```{r}
+trashwheel %>% 
+  ggplot(aes(x = Weight)) + 
+  geom_histogram(binwidth = 0.5, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Weight", x = "Weight", y = "Frequency")
+```
+
+Relationship Between Weight and Volume:
+```{r}
+trashwheel %>% 
+  ggplot(aes(x = Weight, y = Volume)) + 
+  geom_point(color = "blue") + 
+  labs(title = "Scatter Plot of Weight vs Volume", x = "Weight", y = "Volume")
+```
+
+
+
+Relationship Between Homes Powered and Year:
+```{r}
+trashwheel %>%
+  group_by(Year) %>%
+  summarise(total_homes_powered = sum(HomesPowered, na.rm = TRUE)) %>%
+  ggplot(aes(x = Year, y = total_homes_powered)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(title = "Homes Powered by Trash Over Time", x = "Year", y = "# Homes Powered")
+```
+
+
+
