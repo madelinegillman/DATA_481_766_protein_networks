@@ -1,0 +1,67 @@
+---
+title: "02_EDA"
+author: "Malaika Shroff"
+date: "2025-01-14"
+output: html_document
+---
+#Section 0
+Set up and retreive dataset
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+head(trashwheel)
+```
+
+#Section 1
+Identify Response Variables and look at summary statistics that help describe those variables
+```{r}
+#names(trashwheel)
+trash_response <- names(trashwheel)[1:6]
+trash_response
+summary(trashwheel)
+```
+
+
+#Section 2
+Identifying Explanatory Variables and visualize imbalances. I'm choosing to investigate how the different trash cans have different trash allocations
+```{r}
+unique(trashwheel$Name)
+trash_explantory <- names(trashwheel)[1:6]
+trash_explantory
+df_trash <- trashwheel %>% select(Name, (7:ncol(trashwheel)))
+df_long <- df_trash %>%
+  pivot_longer(-Name, names_to = "Trash_Type", values_to = "Count")
+ggplot(df_long, aes(x = Trash_Type, y = Count, fill = Name)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Trash Counts by Type and Trash Wheel",
+       x = "Type of Trash",
+       y = "Count",
+       fill = "Trash Wheel") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(df_long, aes(x = Trash_Type, y = Count, fill = Trash_Type)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ Name) +
+  theme_minimal() +
+  labs(title = "Trash Counts by Type for Each Trash Wheel",
+       x = "Type of Trash",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+There are clearly many imbalances across these bar charts. There is an incredibly high amount of cigarette butts with Mister Trash Wheel, an amount that is incredibly large compared to all other values. 
+
+#Section 3
+I think the historgrams above do a good job of showing the allocation of trash at different sites. My suggested graph is the second of the above graphs. 
+#Section 4
+No need to save a new data set
+
+
+
+
