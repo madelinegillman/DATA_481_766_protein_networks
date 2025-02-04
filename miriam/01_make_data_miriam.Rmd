@@ -1,6 +1,6 @@
 ---
-title: "trash_data_analysis"
-author: Miriam Holleran-Meyer
+title: "01_make_data_miriam.Rmd"
+author: "Miriam Holleran-Meyer"
 output: html_notebook
 ---
 
