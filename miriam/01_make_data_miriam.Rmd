@@ -1,7 +1,22 @@
 ---
 title: "trash_data_analysis"
+author: Miriam Holleran-Meyer
 output: html_notebook
 ---
+
+Section 1: Describe the Project
+
+The Trash Wheel Collection Data tracks the amount of trash from dumpsters over time. It keeps track of the weight and volume of the trash, as well as the amounts and types of trash collected. Additionally, it tells how many homes are powered from the the dumpster's trash.
+
+
+
+Section 2: What you hope to discover in your killer graph
+
+I hope to be able to see the relationships between the trash collected and the homes it powers, and how these relationships may vary over time.
+
+
+
+Section 3: Code and text to retrieve the dataset
 
 Loading trash data:
 ```{r}
@@ -12,43 +27,24 @@ tuesdata <- tidytuesdayR::tt_load(2024, week = 10)
 trashwheel <- tuesdata$trashwheel
 ```
 
+
+
+Section 4: Verify dimensions and variables
+
 First lines of trash data:
 ```{r}
 head(trashwheel)
 ```
 
 
-Summary Statistics for Numerical Variables:
+Section 5: Save locally to sub-folder "RData"
+
 ```{r}
-summary(trashwheel[c("Weight", "Volume", "PlasticBottles", "Polystyrene", "CigaretteButts", "GlassBottles", "PlasticBags", "Wrappers", "SportsBalls", "HomesPowered")])
-```
+# creating RData
+dir.create("RData")
 
-Distribution of Weight of Dumpsters:
-```{r}
-trashwheel %>% 
-  ggplot(aes(x = Weight)) + 
-  geom_histogram(binwidth = 0.5, fill = "blue", color = "black") + 
-  labs(title = "Distribution of Weight", x = "Weight", y = "Frequency")
-```
-
-Relationship Between Weight and Volume:
-```{r}
-trashwheel %>% 
-  ggplot(aes(x = Weight, y = Volume)) + 
-  geom_point(color = "blue") + 
-  labs(title = "Scatter Plot of Weight vs Volume", x = "Weight", y = "Volume")
-```
-
-
-
-Relationship Between Homes Powered and Year:
-```{r}
-trashwheel %>%
-  group_by(Year) %>%
-  summarise(total_homes_powered = sum(HomesPowered, na.rm = TRUE)) %>%
-  ggplot(aes(x = Year, y = total_homes_powered)) +
-  geom_bar(stat = "identity", fill = "blue") +
-  labs(title = "Homes Powered by Trash Over Time", x = "Year", y = "# Homes Powered")
+# Save the data to the sub-folder
+save(trashwheel, file = "RData/trashwheel.RData")
 ```
 
 
