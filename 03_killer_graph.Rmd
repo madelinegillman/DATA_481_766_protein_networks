@@ -1,1 +1,66 @@
-d
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+
+# Data Cleaning
+trashwheel <- trashwheel %>% 
+  rename(
+    Weight = Weight,
+    Volume = Volume,
+    PlasticBottles = PlasticBottles,
+    Polystyrene = Polystyrene,
+    CigaretteButts = CigaretteButts,
+    GlassBottles = GlassBottles,
+    PlasticBags = PlasticBags,
+    Wrappers = Wrappers,
+    SportsBalls = SportsBalls,
+    HomesPowered = HomesPowered
+  ) %>% 
+  filter(!is.na(Weight))
+
+# Summary Statistics
+summary_stats <- trashwheel %>% 
+  summarize(
+    TotalWeight = sum(Weight, na.rm = TRUE),
+    TotalPlasticBottles = sum(PlasticBottles, na.rm = TRUE),
+    TotalPolystyrene = sum(Polystyrene, na.rm = TRUE),
+    TotalCigaretteButts = sum(CigaretteButts, na.rm = TRUE)
+  )
+
+print(summary_stats)
+
+# Distribution of Trash Types
+# Visualize the distribution of different types of trash
+trash_types <- trashwheel %>% 
+  select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
+  pivot_longer(cols = everything(), names_to = "TrashType", values_to = "Count") %>% 
+  group_by(TrashType) %>% 
+  summarize(TotalCount = sum(Count, na.rm = TRUE))
+
+# Plot
+ggplot(trash_types, aes(x = TrashType, y = TotalCount, fill = TrashType)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Distribution of Trash Types", x = "Type of Trash", y = "Total Count")
+
+# Seasonal Trends
+trashwheel <- trashwheel %>% 
+  mutate(Date = as.Date(Date, format = "%Y-%m-%d"),
+         Month = factor(Month, levels = month.name))
+
+seasonal_trends <- trashwheel %>% 
+  group_by(Month) %>% 
+  summarize(TotalWeight = sum(Weight, na.rm = TRUE)) %>%
+  filter(!is.na(TotalWeight) & TotalWeight > 0)
+
+# Plot
+ggplot(seasonal_trends, aes(x = Month, y = TotalWeight, group = 1)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Seasonal Trends in Trash Collection", x = "Month", y = "Total Weight (tons)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
