@@ -1,105 +1,37 @@
----
-title: "Exploring Trash Wheel Collection Data"
-author: "Kunal Kumar"
-date: "`r Sys.Date()`"
-output: html_document
----
+Describe the project:
 
-```{r setup, include=FALSE}
+The Trash Wheel Collection Data is part of Baltimore’s Healthy Harbor initiative, which uses semi-autonomous trash interceptors to collect and remove trash from waterways. This dataset provides insights into the types and quantities of trash collected, helping us understand pollution patterns, seasonal variations, and the effectiveness of waste management efforts.
+
+What you hope to discover in your killer graph:
+
+The goal of the analysis is to uncover trends in the data that reveal how trash collection varies over time and by type. The killer graph should illustrate a key pattern, such as the seasonal trends in total trash collected or the relative proportions of different types of waste. This will provide insights into whether environmental factors influence the amount and type of trash being removed.
+
+Code and text to retrieve the dataset:
+
+```{r}
 library(tidyverse)
-library(here)
-library(ggplot2) 
-knitr::opts_chunk$set(echo = TRUE)
+library(readr)
 ```
 
-## Introduction to Data
-
-The Trash Wheel Collection Data is part of the Healthy Harbor initiative in Baltimore, which uses semi-autonomous trash interceptors to remove trash from waterways. This dataset provides insights into the types and quantities of trash collected, offering the ability to explore patterns, seasonal variations, and the impact of these efforts on environmental sustainability.
-
-## Data Cleaning and Exploration
-
-## Loading Data
-
-```{r load-data}
-# load the data directly from GitHub.
-trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
-summary(trashwheel)
-glimpse(trashwheel)
-```
-### Data Cleaning
-
-```{r cleaning-data}
-# ensure consistent column names and remove unnecessary columns
-trashwheel <- trashwheel %>% 
-  rename(
-    Weight = Weight,
-    Volume = Volume,
-    PlasticBottles = PlasticBottles,
-    Polystyrene = Polystyrene,
-    CigaretteButts = CigaretteButts,
-    GlassBottles = GlassBottles,
-    PlasticBags = PlasticBags,
-    Wrappers = Wrappers,
-    SportsBalls = SportsBalls,
-    HomesPowered = HomesPowered
-  ) %>% 
-  filter(!is.na(Weight))
-
-glimpse(trashwheel)
+```{r}
+# Load the dataset from GitHub
+trash_data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+trash_data
 ```
 
-### Summary Statistics
-
-```{r summary-statistics}
-# summarize key statistics
-summary_stats <- trashwheel %>% 
-  summarize(
-    TotalWeight = sum(Weight, na.rm = TRUE),
-    TotalPlasticBottles = sum(PlasticBottles, na.rm = TRUE),
-    TotalPolystyrene = sum(Polystyrene, na.rm = TRUE),
-    TotalCigaretteButts = sum(CigaretteButts, na.rm = TRUE)
-  )
-
-summary_stats
+```{r}
+# Display the first few rows
+head(trash_data)
 ```
 
-### Distribution of Trash Types
+```{r}
+dim(trash_data)
 
-```{r trash-types}
-# visualize the distribution of different types of trash
-trash_types <- trashwheel %>% 
-  select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
-  pivot_longer(cols = everything(), names_to = "TrashType", values_to = "Count") %>% 
-  group_by(TrashType) %>% 
-  summarize(TotalCount = sum(Count, na.rm = TRUE))
+colnames(trash_data)
 
-# plot
-ggplot(trash_types, aes(x = TrashType, y = TotalCount, fill = TrashType)) +
-  geom_bar(stat = "identity") +
-  theme_minimal() +
-  labs(title = "Distribution of Trash Types", x = "Type of Trash", y = "Total Count")
-```
+str(trash_data)
 
-### Seasonal Trends
-
-```{r seasonal-trends}
-# analyze seasonal trends in trash collection
-trashwheel <- trashwheel %>% 
-  mutate(Date = as.Date(Date, format = "%Y-%m-%d"),
-         Month = factor(Month, levels = month.name))
-
-seasonal_trends <- trashwheel %>% 
-  group_by(Month) %>% 
-  summarize(TotalWeight = sum(Weight, na.rm = TRUE)) %>%
-  filter(!is.na(TotalWeight) & TotalWeight > 0)
-
-# plot
-ggplot(seasonal_trends, aes(x = Month, y = TotalWeight, group = 1)) +
-  geom_line() +
-  geom_point() +
-  theme_minimal() +
-  labs(title = "Seasonal Trends in Trash Collection", x = "Month", y = "Total Weight (tons)") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+summary(trash_data)
 ```
 
 # Why This Data Matters
