@@ -1,7 +1,10 @@
 ```{r}
+# Load necessary libraries
 library(tidyverse)
 library(ggplot2)
+library(corrplot)
 
+# Load the dataset from GitHub
 trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
 
 # Data Cleaning
@@ -31,8 +34,7 @@ summary_stats <- trashwheel %>%
 
 print(summary_stats)
 
-# Distribution of Trash Types
-# Visualize the distribution of different types of trash
+# 1. Distribution of Trash Types
 trash_types <- trashwheel %>% 
   select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
   pivot_longer(cols = everything(), names_to = "TrashType", values_to = "Count") %>% 
@@ -45,7 +47,7 @@ ggplot(trash_types, aes(x = TrashType, y = TotalCount, fill = TrashType)) +
   theme_minimal() +
   labs(title = "Distribution of Trash Types", x = "Type of Trash", y = "Total Count")
 
-# Seasonal Trends
+# 2. Seasonal Trends in Trash Collection
 trashwheel <- trashwheel %>% 
   mutate(Date = as.Date(Date, format = "%Y-%m-%d"),
          Month = factor(Month, levels = month.name))
@@ -62,5 +64,41 @@ ggplot(seasonal_trends, aes(x = Month, y = TotalWeight, group = 1)) +
   theme_minimal() +
   labs(title = "Seasonal Trends in Trash Collection", x = "Month", y = "Total Weight (tons)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# 3. Proportion of Trash Types
+trash_proportions <- trashwheel %>% 
+  summarize(
+    PlasticBottles = sum(PlasticBottles, na.rm = TRUE),
+    Polystyrene = sum(Polystyrene, na.rm = TRUE),
+    CigaretteButts = sum(CigaretteButts, na.rm = TRUE),
+    GlassBottles = sum(GlassBottles, na.rm = TRUE),
+    PlasticBags = sum(PlasticBags, na.rm = TRUE),
+    Wrappers = sum(Wrappers, na.rm = TRUE),
+    SportsBalls = sum(SportsBalls, na.rm = TRUE)
+  ) %>% 
+  pivot_longer(cols = everything(), names_to = "TrashType", values_to = "Count") %>% 
+  mutate(Proportion = Count / sum(Count))
+
+# Plot
+ggplot(trash_proportions, aes(x = "", y = Proportion, fill = TrashType)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  theme_minimal() +
+  labs(title = "Proportion of Trash Types", fill = "Trash Type")
+
+# 4. Correlation Between Trash Types
+correlation_matrix <- trashwheel %>% 
+  select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
+  cor(use = "complete.obs")
+
+corrplot(correlation_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 45)
+
+#1 - Distribution of Trash Types - Bar chart displaying the total count of different types of trash collected, highlighting the most common waste items.
+
+#2 - Seasonal Trends in Trash Collection - Line chart showing how the total weight of collected trash varies across different months, indicating seasonal patterns.
+
+#3 - Proportion of Trash Types - Pie chart illustrating the relative proportions of various trash types, helping visualize which types contribute the most to overall waste.
+
+#4 - Correlation Between Trash Types - Correlation matrix heatmap revealing relationships between different types of trash, showing which items tend to appear together.
 ```
 
