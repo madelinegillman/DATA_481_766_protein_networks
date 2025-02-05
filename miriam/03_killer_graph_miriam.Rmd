@@ -1,0 +1,74 @@
+---
+title: "03_killer_graph_miriam"
+author: "Miriam Holleran-Meyer"
+output: html_document
+---
+
+Introduction Section: Describe dataset, State question of interest
+
+
+Describe the project:
+
+The Trash Wheel Collection Data tracks the amount of trash from dumpsters over time. It keeps track of the weight and volume of the trash, as well as the amounts and types of trash collected. Additionally, it tells how many homes are powered from the the dumpster's trash.
+
+
+What you hope to discover in your killer graph:
+
+I hope to be able to see the relationships between the trash collected and the homes it powers, and how these relationships may vary over time.
+
+
+
+Results Section: The paragraph before the killer graph should give the main conclusions and how they can be read from the graph. Not dynamic. Content over "glitz". Use ggplot2 – do not show your code. The killer graph needs a caption.
+
+Cigarette butts make the largest contribution to the trash collection, with the largest omount of waste being collected during the summer and spring months.
+
+
+
+Killer Graphs: (taken from Kunal's file)
+Distribution of Trash Types:
+```{r}
+# visualize the distribution of different types of trash
+trash_types <- trashwheel %>% 
+  select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
+  pivot_longer(cols = everything(), names_to = "TrashType", values_to = "Count") %>% 
+  group_by(TrashType) %>% 
+  summarize(TotalCount = sum(Count, na.rm = TRUE))
+
+# plot
+ggplot(trash_types, aes(x = TrashType, y = TotalCount, fill = TrashType)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Distribution of Trash Types", x = "Type of Trash", y = "Total Count")
+```
+
+
+Seasonal Trends:
+```{r}
+# analyze seasonal trends in trash collection
+trashwheel <- trashwheel %>% 
+  mutate(Date = as.Date(Date, format = "%Y-%m-%d"),
+         Month = factor(Month, levels = month.name))
+
+seasonal_trends <- trashwheel %>% 
+  group_by(Month) %>% 
+  summarize(TotalWeight = sum(Weight, na.rm = TRUE)) %>%
+  filter(!is.na(TotalWeight) & TotalWeight > 0)
+
+# plot
+ggplot(seasonal_trends, aes(x = Month, y = TotalWeight, group = 1)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Seasonal Trends in Trash Collection", x = "Month", y = "Total Weight (tons)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+Discussion: Suggest a testable hypothesis
+
+More homes will be powered during the summer and spring months rather than the fall and winter months.
+
+
+
+
