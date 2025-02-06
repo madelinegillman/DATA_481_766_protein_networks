@@ -1,0 +1,49 @@
+---
+title: "03_killer_graph"
+author: "Justin Rivera"
+date: "2025-02-06"
+output: pdf_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+
+# Option 2: Read directly from GitHub
+
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+
+```
+
+
+```{r}
+ggplot(trashwheel, aes(x = Year, y = HomesPowered, group = Year)) +
+  geom_boxplot(fill = "orange", alpha = 0.6) +
+  theme_minimal() +
+  labs(title = "Yearly Trends in Homes Powered",
+       x = "Year",
+       y = "Homes Powered")
+
+ggplot(trashwheel, aes(x = Year, y = Weight, group = Year)) +
+  geom_boxplot(fill = "blue", alpha = 0.6) +
+  theme_minimal() +
+  labs(title = "Yearly Trends in Weight",
+       x = "Year",
+       y = "Weight")
+```
+
+```{r}
+ggplot(trash_long, aes(x = Year, y = Amount, color = TrashType)) +
+  geom_line(size = 1) +
+  geom_line(aes(y = HomesPowered * 50000), color = "red", size = 1.2, linetype = "dashed") +
+  facet_wrap(~TrashType, scales = "free_y") +
+  theme_minimal() +
+  labs(title = "Trash Trends and Homes Powered Over Time",
+       x = "Year",
+       y = "Amount of Trash Collected") +
+  scale_y_continuous(sec.axis = sec_axis(~./50000, name = "Homes Powered"))
+
+```

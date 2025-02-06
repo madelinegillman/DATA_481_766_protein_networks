@@ -1,0 +1,39 @@
+---
+title: "TrashData"
+author: "Justin Rivera"
+date: "2025-01-14"
+output: html_document
+---
+
+# Section 1
+
+This dataset details trash collected across Baltimore by various trash bots. It categorizes the type of trash picked up, along with the date, which bot picked it up, and the total volume of trash picked up that day. This is useful for us to analyze trends of trash over time, seasonally and annually. This can hopefully provide some insight into patterns of waste.
+
+# Section 2
+
+In the killer graph, I hope to effectively showcase patterns we found in the data, and be able to illustrate why it is important. In our case, what trends can be found in the trash, what this tells us about people, and potential solutions to the problem of waste.
+
+# Section 3
+
+Data script:
+
+```{r}
+
+# Option 2: Read directly from GitHub
+
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+```
+Cleaning Script: 
+```{r}
+library(tidyverse)
+library(here)
+library(withr)
+```
+# Section 4: 
+
+Dimensions and variables: The data has 993 observations of 16 variables.
+```{r}
+
+glimpse(trashwheel)
+
+```
