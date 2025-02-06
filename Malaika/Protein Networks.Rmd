@@ -1,0 +1,50 @@
+---
+title: "Protein Networks EDA"
+author: "Malaika Shroff"
+date: "2025-02-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set Up
+
+```{r}
+# Load necessary libraries
+library(dplyr)        # Helps load, explore, and manipulate data tables
+library(ggplot2)      # Makes it easy to create beautiful and informative plots
+library(stats)        # Provides statistical tools for analyzing data (built-in with R)
+library(ggpubr)       # Adds statistical annotations like p-values to plots
+library(data.table)   # For fast data manipulation (optional)
+
+# Optional: Configure options to display more rows and columns
+options(dplyr.print_max = 500)       # Display up to 500 rows
+options(dplyr.width = Inf)           # Display all columns without truncation
+
+# Optional: Set a nice default theme for plots
+theme_set(theme_bw())                # Equivalent to seaborn's "whitegrid"
+
+# Confirm to students that everything is ready
+cat("All libraries are imported, and we're ready to go!\n")
+```
+```{r}
+# Load the dataset for the H2170 lung cancer cell line
+# We call its container "df_cell", which stands for dataFrame of the cell line that holds all of the single-cell protein measurements
+df_cell <- read.csv('lung_cancer.csv', row.names = 1)  # Equivalent to index_col=0 in Python
+
+# Display the first few rows to ensure it loaded correctly
+cat("Dataset loaded successfully! Here are the first few rows:\n")
+head(df_cell)
+
+```
+
+
+
+
+
+
+
+
+
