@@ -1,0 +1,77 @@
+---
+title: "02_EDA"
+author: "Justin Rivera"
+date: "2025-02-06"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+
+# Option 2: Read directly from GitHub
+
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+
+```
+
+# Section 1
+
+```{r}
+glimpse(trashwheel)
+trash_numeric = trashwheel %>% 
+  select(-c(ID, Name, Dumpster, Month, Year, Date, SportsBalls, GlassBottles, Wrappers))
+trash_numeric = drop_na(trash_numeric)
+```
+
+```{r}
+cor(trash_numeric, method= "pearson")
+```
+
+Upon looking at the data, I believe Homes powered is a good response variable.
+
+# Section 2
+
+Looking at the data, there are too many missing observations for sportsballs, glassbottles, and wrappers. So we will not use those. The remaining types of trash will be the explanatory variables. The amount of homes powered is highly correlated with weight, so we will not use that.
+
+```{r, fig.width=10}
+ggplot(gather(trash_numeric, cols, value), aes(x = value)) + 
+       geom_histogram(bins = 30) + facet_wrap(.~cols, scales = "free_x")
+```
+
+```{r}
+monthyear_data = trashwheel %>% 
+  mutate(MonthYear = paste(Month, as.character(Year)))
+
+weight_per_month = monthyear_data %>% 
+  select(MonthYear, Weight) %>% 
+  group_by(MonthYear = fct_inorder(MonthYear)) %>% 
+  summarize(sum_weight = sum(Weight))
+
+weight_per_month
+```
+
+```{r}
+
+weight_per_month_2 = trashwheel %>% 
+  select(Month, Weight) %>% 
+  filter(Month != "july", Month != "september") %>% 
+  group_by(Month) %>% 
+  summarize(sum_weight = sum(Weight))
+
+weight_per_month_2
+
+```
+# Section 3
+
+I have two goals for this data. One is to see how well Homes Powered can be predicted by our other variables. The other is to see seasonal differences in waste patterns.
+```{r, fig.width=11}
+ggplot(weight_per_month_2, mapping = aes(x = Month, y = sum_weight, fill = Month)) +
+  geom_col()
+
+```
+
+```
