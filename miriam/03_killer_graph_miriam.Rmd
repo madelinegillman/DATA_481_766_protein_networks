@@ -24,10 +24,9 @@ Cigarette butts make the largest contribution to the trash collection, with the 
 
 
 
-Killer Graphs: (taken from Kunal's file)
+Killer Graphs:
 Distribution of Trash Types:
 ```{r}
-# visualize the distribution of different types of trash
 trash_types <- trashwheel %>% 
   select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
   pivot_longer(cols = everything(), names_to = "TrashType", values_to = "Count") %>% 
@@ -40,6 +39,75 @@ ggplot(trash_types, aes(x = TrashType, y = TotalCount, fill = TrashType)) +
   theme_minimal() +
   labs(title = "Distribution of Trash Types", x = "Type of Trash", y = "Total Count")
 ```
+
+
+
+
+```{r}
+trashwheel <- trashwheel %>% 
+  mutate(Date = as.Date(Date, format = "%Y-%m-%d"),
+         Month = factor(Month, levels = month.name))
+
+seasonal_trends <- trashwheel %>% 
+  group_by(Month) %>% 
+  summarize(TotalPower = sum(HomesPowered, na.rm = TRUE)) %>%
+  filter(!is.na(TotalPower) & TotalPower > 0)
+
+ggplot(seasonal_trends, aes(x = Month, y = TotalPower, group = 1)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Seasonal Trends in Homes Powered", x = "Month", y = "Total Homes Powered") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+library(tidyverse)
+library(ggcorrplot)
+
+cor_data <- trashwheel %>%
+  select(PlasticBottles, Polystyrene, CigaretteButts, 
+         GlassBottles, PlasticBags, Wrappers, SportsBalls)
+
+cor_matrix <- cor(cor_data, use = "complete.obs")
+
+ggcorrplot(cor_matrix, method = "square", 
+           lab = TRUE, lab_size = 3, 
+           colors = c("blue", "white", "red"),
+           title = "Correlation Heatmap: Trash Types",
+           ggtheme = theme_minimal())
+```
+
+
+
+
+
+Discussion: Suggest a testable hypothesis
+
+Predicting how many homes can be powered based on the types of trash collected
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 Seasonal Trends:
@@ -62,13 +130,3 @@ ggplot(seasonal_trends, aes(x = Month, y = TotalWeight, group = 1)) +
   labs(title = "Seasonal Trends in Trash Collection", x = "Month", y = "Total Weight (tons)") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-
-
-
-Discussion: Suggest a testable hypothesis
-
-More homes will be powered during the summer and spring months rather than the fall and winter months.
-
-
-
-
