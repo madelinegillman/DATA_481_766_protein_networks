@@ -1,0 +1,61 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include = FALSE}
+# libraries
+library(tidyverse)
+library(ggplot2)
+library(lubridate) # for handling dates
+
+# loading the dataset
+trash_data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+
+# converting date column to the proper format
+trash_data <- trash_data %>%
+  mutate(Date = mdy(Date),  
+         Year = year(Date)) 
+
+# select columns and reshaping the data
+trash_types <- trash_data %>%
+  select(Year, PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>%
+  pivot_longer(cols = -Year, names_to = "TrashType", values_to = "Count") %>%
+  group_by(Year, TrashType) %>%
+  summarize(Total = sum(Count, na.rm = TRUE), .groups = "drop") %>%
+  group_by(Year) %>%
+  mutate(Proportion = Total / sum(Total))
+```
+
+## Distribution of Different Types of Trash Collected (2014-2023)
+
+The graph highlights trends in waste composition from 2014 to 2023, with cigarette butts initially dominating at 80% in 2014 but declining to around 40% by 2023, suggesting a shift in smoking habits or disposal practices rather than maintaining a consistent dominance. Plastic waste, particularly plastic bottles, grew significantly, reaching ~30% of total waste by 2022-2023, while wrappers remained stable at 10-15%. Items like glass bottles and sports balls were minimal or absent, likely due to recycling or lower disposal rates. Over time, waste diversity improved, with more balanced proportions among trash types, indicating potential changes in consumption or enhanced waste management practices.
+
+```{r trash-distribution, echo=FALSE, fig.cap="Distribution of Different Types of Trash Collected Over The Years."}
+# plotting proportion charts for each year
+ggplot(trash_types, aes(x = TrashType, y = Proportion, fill = TrashType)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ Year) +
+  theme_minimal() +
+  labs(
+    title = "Proportion of Trash Collected by Year",
+    x = NULL,  # Remove x-axis label
+    y = "Proportion of Total Trash",
+    fill = "Trash Type"
+  ) +
+  theme(
+    axis.text.x = element_blank(),  # remove x-axis text labels
+    #axis.ticks.x = element_blank()  # remove x-axis ticks
+  )
+```
+**Components of the Graph:**
+- **X-axis:** Trash types (removed from display to reduce clutter).
+- **Y-axis:** Proportion of total trash collected in each year.
+- **Facet Grid:** Displays the distribution of trash types for each year separately.
+- **Color Legend:** Identifies the different trash types, ensuring clarity despite the lack of x-axis labels.
+
