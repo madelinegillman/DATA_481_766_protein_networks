@@ -1,0 +1,23 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Section 1: Identify Response Variables & Examine Distributions
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Load dataset
+data <- read.csv("lung_cancer.csv")
+
+# Identify response variables
+str(data)  # Check structure of dataset
+summary(data)  # Summary statistics
+
+# Examine distributions
+response_var <- "X01_cMyc_nuc_mean" 
+hist(data[[response_var]], main="Distribution of Response Variable", xlab=response_var, col="lightblue")
+```
+
