@@ -66,3 +66,5 @@ summary_stats
 # Why This Data Matters
 
 The Trash Wheel Collection Data provides crucial insights into the effectiveness of environmental initiatives aimed at reducing waterway pollution. By quantifying the types and amounts of trash collected, this data highlights the scale of waste entering our ecosystems and underscores the importance of sustainable waste management practices. Moreover, analyzing seasonal and regional variations can inform targeted interventions and public awareness campaigns, driving broader participation in environmental conservation efforts. This is the team consensus document.
+
+# Groups final 02 EDA for trashwheel dataset
