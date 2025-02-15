@@ -59,3 +59,5 @@ ggplot(trash_types, aes(x = TrashType, y = Proportion, fill = TrashType)) +
 - **Facet Grid:** Displays the distribution of trash types for each year separately.
 - **Color Legend:** Identifies the different trash types, ensuring clarity despite the lack of x-axis labels.
 
+# This reflect our groups final killer graph that will be used on presentation
+
