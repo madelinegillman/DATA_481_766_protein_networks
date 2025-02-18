@@ -1,0 +1,45 @@
+---
+title: "03_killergraph"
+author: "Malaika Shroff"
+date: "2025-02-06"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+df_trash <- trashwheel %>% select(Name, (7:ncol(trashwheel)))
+df_long <- df_trash %>%
+  pivot_longer(-Name, names_to = "Trash_Type", values_to = "Count") %>%
+  filter(!Trash_Type %in% c("Volume", "Weight"))  # Exclude "Volume" and "Weight"
+
+```
+
+# Introduction
+The dataset in question is of a trash dataset. This dataset describes the types of trash picked up by four trash machines as well as times and locations for that data. The question of interest in the following killer graph is about trash allocation. How is different types of trash distributed at different locations and what is the makeup of that trash?
+
+# Results
+Cigarette butts dominates the trash with an exceedingly high number of cigarettes found in the Mister Trash Wheel. While all trash wheels found predominately cigarette butts, the sheer amount at Mister Trash Wheel raises the total amount of trash at Mister Trash Wheel to be much higher than the total amount of trash at other trash wheels. Besides cigarette butts, plastic bags, plastic bottles, and sports balls make up other notable parts of the trash found at these locations. 
+```{r}
+# Create the pie charts faceted by Trash Wheel
+ggplot(df_long, aes(x = "", y = Count, fill = Trash_Type)) +
+  geom_bar(stat = "identity", width = 1) +   # Bar chart for stacking
+  coord_polar("y", start = 0) +             # Converts bars into pie slices
+  facet_wrap(~ Name) +                       # One pie chart per trash wheel
+  theme_void() +                             # Removes axes for clean look
+  labs(title = "Trash Type Distribution for Each Trash Wheel", fill = "Trash Type") +
+  theme(legend.position = "bottom")
+```
+
+# Discussion
+A followup testable hypothesis is that the difference in cigarette butts between mister trash wheel and the other trash wheels is statistically significant. 
+
+
+
+
+
+
+
