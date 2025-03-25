@@ -1,0 +1,1 @@
+Results for the protein networks analysis. Raw data should go in data/

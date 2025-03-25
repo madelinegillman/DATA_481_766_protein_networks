@@ -1,0 +1,99 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+# Setup and data loading
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(ggplot2)
+library(corrplot)
+
+# Load and clean data
+trashwheel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+trashwheel <- trashwheel %>% 
+  rename(
+    Weight = Weight,
+    Volume = Volume,
+    PlasticBottles = PlasticBottles,
+    Polystyrene = Polystyrene,
+    CigaretteButts = CigaretteButts,
+    GlassBottles = GlassBottles,
+    PlasticBags = PlasticBags,
+    Wrappers = Wrappers,
+    SportsBalls = SportsBalls,
+    HomesPowered = HomesPowered
+  ) %>% 
+  filter(!is.na(Weight))
+```
+
+## Distribution of Different Types of Trash Collected
+Cigarette butts are the most prevalent item, with over 1.5 × 10^7 items collected. Other categories such as plastic bottles, polystyrene, and wrappers have notable counts, whereas glass bottles and sports balls appear infrequent.
+
+```{r trash-distribution, echo=FALSE, fig.cap="Distribution of Different Types of Trash Collected."}
+# Distribution plot
+trash_types <- trashwheel %>% 
+  select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
+  pivot_longer(cols = everything(), names_to = "TrashType", values_to = "Count") %>% 
+  group_by(TrashType) %>% 
+  summarize(TotalCount = sum(Count, na.rm = TRUE))
+
+ggplot(trash_types, aes(y = TrashType, x = TotalCount, fill = TrashType)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Distribution of Trash Types", x = "Total Count", y = "Type of Trash")
+```
+
+**Components of the Graph:**
+- **X-axis:** Total count of trash items.
+- **Y-axis:** Different types of trash collected.
+- **Bars:** Represent the frequency of each trash type.
+- **Colors:** Differentiate trash types.
+
+
+## Monthly Trends in Total Trash Collection Weight
+The line graph below illustrates seasonal variations in trash collection across months. Peak collection occurs during summer (June-July) with around 400 tons. There is an increase from winter to spring, a decline from summer through fall, and a secondary peak in November-December.
+
+```{r seasonal-trends, echo=FALSE, fig.cap="Monthly Trends in Total Trash Collection Weight."}
+# Seasonal trends plot
+trashwheel <- trashwheel %>% 
+  mutate(Date = as.Date(Date, format = "%Y-%m-%d"),
+         Month = factor(Month, levels = month.name))
+
+seasonal_trends <- trashwheel %>% 
+  group_by(Month) %>% 
+  summarize(TotalWeight = sum(Weight, na.rm = TRUE)) %>%
+  filter(!is.na(TotalWeight) & TotalWeight > 0)
+
+ggplot(seasonal_trends, aes(x = Month, y = TotalWeight, group = 1)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Seasonal Trends in Trash Collection", x = "Month", y = "Total Weight (tons)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+**Components of the Graph:**
+- **X-axis:** Months of the year.
+- **Y-axis:** Total weight of trash collected (tons).
+- **Line & Points:** Show seasonal variations.
+
+
+## Correlation Matrix of Different Trash Types
+The heatmap below displays the correlation between different types of trash. Darker blue indicates stronger positive correlations. Plastic items (bottles, bags, polystyrene) tend to be found together. Sports balls and glass bottles show weaker correlations.
+
+```{r correlation-plot, echo=FALSE, fig.cap="Correlation Matrix of Different Trash Types."}
+# Correlation plot
+correlation_matrix <- trashwheel %>% 
+  select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
+  cor(use = "complete.obs")
+
+corrplot(correlation_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 45)
+```
+
+**Components of the Graph:**
+- **Heatmap Shades:** Indicate the strength of correlation.
+- **Darker Colors:** Represent stronger correlations.
+- **Trash Categories:** Each axis labels a different trash type.

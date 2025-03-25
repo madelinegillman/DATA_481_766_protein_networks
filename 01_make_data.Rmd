@@ -1,0 +1,39 @@
+Describe the project:
+
+The Trash Wheel Collection Data is part of Baltimore’s Healthy Harbor initiative, which uses semi-autonomous trash interceptors to collect and remove trash from waterways. This dataset provides insights into the types and quantities of trash collected, helping us understand pollution patterns, seasonal variations, and the effectiveness of waste management efforts.
+
+What you hope to discover in your killer graph:
+
+The goal of the analysis is to uncover trends in the data that reveal how trash collection varies over time and by type. The killer graph should illustrate a key pattern, such as the seasonal trends in total trash collected or the relative proportions of different types of waste. This will provide insights into whether environmental factors influence the amount and type of trash being removed.
+
+Code and text to retrieve the dataset:
+
+```{r}
+library(tidyverse)
+library(readr)
+```
+
+```{r}
+# Load the dataset from GitHub
+trash_data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-03-05/trashwheel.csv')
+trash_data
+```
+
+```{r}
+# Display the first few rows
+head(trash_data)
+```
+
+```{r}
+dim(trash_data)
+
+colnames(trash_data)
+
+str(trash_data)
+
+summary(trash_data)
+```
+
+# Why This Data Matters
+
+The Trash Wheel Collection Data provides crucial insights into the effectiveness of environmental initiatives aimed at reducing waterway pollution. By quantifying the types and amounts of trash collected, this data highlights the scale of waste entering our ecosystems and underscores the importance of sustainable waste management practices. Moreover, analyzing seasonal and regional variations can inform targeted interventions and public awareness campaigns, driving broader participation in environmental conservation efforts.
