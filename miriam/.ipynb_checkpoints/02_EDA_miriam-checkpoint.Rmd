@@ -1,0 +1,171 @@
+---
+title: "02_EDA_miriam"
+author: "Miriam Holleran-Meyer"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+library(ggcorrplot)
+library(tidyverse)
+library(here)
+library(ggplot2) 
+knitr::opts_chunk$set(echo = TRUE)
+library(tidytuesdayR)
+tuesdata <- tidytuesdayR::tt_load(2024, week = 10)
+trashwheel <- tuesdata$trashwheel
+```
+
+
+
+Section 1: Identify response variables, Examine distributions
+
+Summary Statistics for Numerical Variables:
+```{r}
+summary(trashwheel[c("Weight", "Volume", "PlasticBottles", "Polystyrene", "CigaretteButts", "GlassBottles", "PlasticBags", "Wrappers", "SportsBalls", "HomesPowered")])
+```
+
+Distributions of Potential Response Variables:
+```{r}
+trashwheel %>% 
+  ggplot(aes(x = Weight)) + 
+  geom_histogram(binwidth = 0.25, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Weight", x = "Weight", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = Volume)) + 
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Volume", x = "Volume", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = HomesPowered)) + 
+  geom_histogram(binwidth = 2, fill = "blue", color = "black") + 
+  labs(title = "Distribution of HomesPowered", x = "Volume", y = "Frequency")
+```
+
+
+
+Section 2: Identify explanatory variables, Make histograms or bar graphs, Look for imbalance
+
+Distributions of Potential Explanatory Variables:
+```{r}
+trashwheel %>% 
+  ggplot(aes(x = Weight)) + 
+  geom_histogram(binwidth = 0.25, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Weight", x = "Weight", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = PlasticBottles)) + 
+  geom_histogram(binwidth = 400, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Plastic Bottles", x = "Plastic Bottles", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = Polystyrene)) + 
+  geom_histogram(binwidth = 400, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Polystyrene", x = "Polystyrene", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = CigaretteButts)) + 
+  geom_histogram(binwidth = 20000, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Cigarette Butts", x = "Cigarette Butts", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = GlassBottles)) + 
+  geom_histogram(binwidth = 5, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Glass Bottles", x = "Glass Bottles", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = PlasticBags)) + 
+  geom_histogram(binwidth = 1000, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Plastic Bags", x = "Plastic Bags", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = Wrappers)) + 
+  geom_histogram(binwidth = 1000, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Wrappers", x = "Wrappers", y = "Frequency")
+
+trashwheel %>% 
+  ggplot(aes(x = SportsBalls)) + 
+  geom_histogram(binwidth = 2, fill = "blue", color = "black") + 
+  labs(title = "Distribution of Sports Balls", x = "Sports Balls", y = "Frequency")
+```
+
+
+Section 3: Review goal of analysis, Make preliminary graph
+
+Goal of analysis: looking at relationships between the trash collected and the homes it powers, and how these relationships may vary over time
+
+Preliminary Graphs: (taken from Kunal's Code)
+
+Showing distribution of trash types:
+```{r}
+# visualize the distribution of different types of trash
+trash_types <- trashwheel %>% 
+  select(PlasticBottles, Polystyrene, CigaretteButts, GlassBottles, PlasticBags, Wrappers, SportsBalls) %>% 
+  pivot_longer(cols = everything(), names_to = "TrashType", values_to = "Count") %>% 
+  group_by(TrashType) %>% 
+  summarize(TotalCount = sum(Count, na.rm = TRUE))
+
+# plot
+ggplot(trash_types, aes(x = TrashType, y = TotalCount, fill = TrashType)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Distribution of Trash Types", x = "Type of Trash", y = "Total Count")
+```
+
+Looking at seaosnal trends:
+```{r}
+# analyze seasonal trends in trash collection
+trashwheel <- trashwheel %>% 
+  mutate(Date = as.Date(Date, format = "%Y-%m-%d"),
+         Month = factor(Month, levels = month.name))
+
+seasonal_trends <- trashwheel %>% 
+  group_by(Month) %>% 
+  summarize(TotalWeight = sum(Weight, na.rm = TRUE)) %>%
+  filter(!is.na(TotalWeight) & TotalWeight > 0)
+
+# plot
+ggplot(seasonal_trends, aes(x = Month, y = TotalWeight, group = 1)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Seasonal Trends in Trash Collection", x = "Month", y = "Total Weight (tons)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+Section 4: Save a new dataset, if necessary
+
+Data Cleaning: (used from Kunal's Code)
+```{r}
+# ensure consistent column names and remove unnecessary columns
+trashwheel <- trashwheel %>% 
+  rename(
+    Weight = Weight,
+    Volume = Volume,
+    PlasticBottles = PlasticBottles,
+    Polystyrene = Polystyrene,
+    CigaretteButts = CigaretteButts,
+    GlassBottles = GlassBottles,
+    PlasticBags = PlasticBags,
+    Wrappers = Wrappers,
+    SportsBalls = SportsBalls,
+    HomesPowered = HomesPowered
+  ) %>% 
+  filter(!is.na(Weight))
+
+glimpse(trashwheel)
+```
+
+Saving new data:
+```{r}
+# creating RData
+dir.create("RData")
+
+# Save the data to the sub-folder
+save(trashwheel, file = "RData/trashwheel.RData")
+```
+
+
